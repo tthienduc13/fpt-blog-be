@@ -1,8 +1,9 @@
 import mysql from "mysql";
-
+import { config as configDotenv } from "dotenv";
+configDotenv();
 export const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Ibanez131003@",
-  database: "fptblog",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.MYSQL_DB,
 });
