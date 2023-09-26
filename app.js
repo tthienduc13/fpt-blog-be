@@ -34,6 +34,7 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/comments", commentsRoutes);
 app.use("/api/likes", likesRoutes);
 
+
 app.listen(process.env.APP_PORT, () => {
   console.log(`App is listening on ${process.env.APP_PORT}`);
 });
