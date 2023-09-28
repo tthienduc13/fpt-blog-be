@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { config as configDotenv } from "dotenv";
-import e from "express";
 configDotenv();
 export const register = (req, res) => {
   // CHECK IF USER EXISTS
@@ -22,18 +21,17 @@ export const register = (req, res) => {
     let role;
     const { email } = req.body;
     if (email.endsWith("@fpt.edu.vn")) {
-      role = "user";
+      role = 1;
     } else if (email.endsWith("@fe.edu.vn")) {
-      role = "mentor";
+      role = 2;
     }
 
-    const rememberStatus = false;
     const insertQuery =
-      "INSERT INTO user (user_id, email, password, role, remember) VALUES (?,?,?,?,?)";
+      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,0,NOW())";
 
     db.query(
       insertQuery,
-      [user_id, req.body.email, hashedPassword, role, rememberStatus],
+      [user_id, req.body.email, hashedPassword, role],
       (err, data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json("User has been created.");
@@ -44,7 +42,7 @@ export const register = (req, res) => {
 
 export const login = (req, res) => {
   const q = "SELECT * FROM user WHERE email = ?";
-
+  const rememberStatus = false;
   db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0) return res.status(404).json("User not found!");
@@ -60,8 +58,8 @@ export const login = (req, res) => {
       {
         email: data[0].email,
         sub: data[0].user_id,
-        UserRole: data[0].role,
-        "remember-me": data[0].remember,
+        UserRole: data[0].role_id,
+        "remember-me": rememberStatus,
       },
       process.env.SECRET_KEY
     );

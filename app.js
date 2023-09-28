@@ -30,10 +30,9 @@ app.use(cors({ origin: "http://localhost:3001" }));
 app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/blog", blogRoutes);
+app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentsRoutes);
 app.use("/api/likes", likesRoutes);
-
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`App is listening on ${process.env.APP_PORT}`);
