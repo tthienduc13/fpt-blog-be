@@ -8,6 +8,8 @@ import likesRoutes from "./routes/likes.route.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { config as configDotenv } from "dotenv";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 configDotenv();
 const app = express();
 
@@ -33,6 +35,31 @@ app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentsRoutes);
 app.use("/api/likes", likesRoutes);
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "FU-BLOG COMMUNITY",
+      version: "0.1",
+      description:
+        "This is the document for API of FU-BLOG COMMUNITY made with Express and documented by Swagger.",
+      contact: {
+        name: "ducnltdev",
+        email: "ducnltdev@gmail.com",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const spacs = swaggerJsdoc(options);
+app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(spacs));
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`App is listening on ${process.env.APP_PORT}`);
