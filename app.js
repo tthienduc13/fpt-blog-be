@@ -22,12 +22,7 @@ app.use(
 app.use(
   bodyParser.raw({ inflate: true, limit: "100kb", type: "application/json" })
 );
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  })
-);
+app.use(cors());
 app.use(cookieParser());
 
 initRoutes(app);
