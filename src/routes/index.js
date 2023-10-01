@@ -30,15 +30,12 @@ const options = {
 const spacs = swaggerJsdoc(options);
 
 const initRoutes = (app) => {
-  app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(spacs));
+  app.use("/", swaggerUi.serve, swaggerUi.setup(spacs));
   app.use("/api/auth", authRoutes);
   app.use("/api/comments", commentsRoutes);
   app.use("/api/likes", likesRoutes);
   app.use("/api/blogs", blogRoutes);
   app.use("/api/users", userRoutes);
-  return app.use("/", (req, res) => {
-    return res.send("server on");
-  });
 };
 
 export default initRoutes;
