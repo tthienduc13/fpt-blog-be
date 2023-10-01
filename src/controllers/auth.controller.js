@@ -50,10 +50,7 @@ const register = (req, res) => {
 const verify = (req, res) => {
   const email = req.query.email;
   const token = req.query.token;
-
-  // Check if the token matches the hashed email
   if (bcrypt.compareSync(email, token)) {
-    // Update the user's isVerified status to 1
     db.query(
       "UPDATE user SET isVerified = ? WHERE email = ?",
       [true, email],
@@ -84,6 +81,12 @@ const login = (req, res) => {
     );
 
     if (!checkPassword) return res.status(400).json("Wrong password or email");
+
+    if (!data[0].isVerified) {
+      return res
+        .status(400)
+        .json("Account not verified. Please verify your email.");
+    }
 
     const token = jwt.sign(
       {
