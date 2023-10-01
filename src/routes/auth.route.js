@@ -71,5 +71,32 @@ router.post("/login", authController.login);
  *         description: Internal server error
  */
 router.post("/register", authController.register);
-
+/**
+ * @swagger
+ * /api/auth/verify:
+ *   get:
+ *     summary: Verify user account
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The email of the user to verify
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The verification token received via email
+ *     responses:
+ *       200:
+ *         description: Account verification successful
+ *       400:
+ *         description: Invalid verification token
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/verify", authController.verify);
 export default router;

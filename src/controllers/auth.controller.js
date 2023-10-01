@@ -3,21 +3,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { config as configDotenv } from "dotenv";
+import mailer from "../helpers/sendMail.js";
 configDotenv();
 const register = (req, res) => {
-  // CHECK IF USER EXISTS
   const q = "SELECT * FROM user WHERE email = ?";
   const user_id = uuidv4();
 
   db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length) return res.status(409).json("User already exists!");
-
-    // CREATE A NEW USER
-    // Hash the password
     const salt = bcrypt.genSaltSync(11);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-
+    const hashedEmail = bcrypt.hashSync(req.body.email, salt);
     let role;
     const { email } = req.body;
     if (email.endsWith("@fpt.edu.vn")) {
@@ -27,17 +24,51 @@ const register = (req, res) => {
     }
 
     const insertQuery =
-      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,0,NOW())";
+      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,?,NOW())";
 
     db.query(
       insertQuery,
-      [user_id, req.body.email, hashedPassword, role],
+      [user_id, req.body.email, hashedPassword, role, false],
       (err, data) => {
         if (err) return res.status(500).json(err);
-        return res.status(200).json("User has been created.");
+        if (!err) {
+          let mailSubject = "FUBLOG Community verification email!";
+          const token = hashedEmail;
+          let content = `
+          <a class="button" href="https://fpt-blog-be-production.up.railway.app/api/auth/verify?email=${req.body.email}&token=${token}">
+                  Verify Account
+                </a>
+          `;
+          mailer.sendEmail(req.body.email, mailSubject, content);
+          return res.status(200).json("User has been created.");
+        }
       }
     );
   });
+};
+
+const verify = (req, res) => {
+  const email = req.query.email;
+  const token = req.query.token;
+
+  // Check if the token matches the hashed email
+  if (bcrypt.compareSync(email, token)) {
+    // Update the user's isVerified status to 1
+    db.query(
+      "UPDATE user SET isVerified = ? WHERE email = ?",
+      [true, email],
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            msg: err,
+          });
+        }
+        return res.status(200).json("Account verification successful.");
+      }
+    );
+  } else {
+    return res.status(400).json("Invalid verification token.");
+  }
 };
 
 const login = (req, res) => {
@@ -71,4 +102,5 @@ const login = (req, res) => {
 export default {
   login: login,
   register: register,
+  verify: verify,
 };
