@@ -80,11 +80,11 @@ const login = (req, res) => {
       data[0].password
     );
 
-    if (!checkPassword) {
-      return res.status(400).json("Wrong password or email");
-    } else if (!data[0].isVerified) {
+    if (!checkPassword) return res.status(400).json("Wrong password or email");
+
+    if (!data[0].isVerified) {
       return res
-        .status(422)
+        .status(401)
         .json("Account not verified. Please verify your email.");
     }
 
