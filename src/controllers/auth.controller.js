@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { config as configDotenv } from "dotenv";
 configDotenv();
-export const register = (req, res) => {
+const register = (req, res) => {
   // CHECK IF USER EXISTS
   const q = "SELECT * FROM user WHERE email = ?";
   const user_id = uuidv4();
@@ -40,7 +40,7 @@ export const register = (req, res) => {
   });
 };
 
-export const login = (req, res) => {
+const login = (req, res) => {
   const q = "SELECT * FROM user WHERE email = ?";
   const rememberStatus = false;
   db.query(q, [req.body.email], (err, data) => {
@@ -68,23 +68,7 @@ export const login = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
-  res
-    .clearCookie("accessToken", {
-      secure: true,
-      sameSite: "none",
-    })
-    .status(200)
-    .json("User has been logged out");
-};
-
-export const getUserInfo = (req, res) => {
-  const query = "SELECT * FROM user WHERE user_id = ?";
-  db.query(query, [req.body.user_id], (err, result) => {
-    if (err) return res.status(500).json(err);
-    if (result.length === 0) return res.status(404).json("User not found!");
-
-    const userInfo = result[0];
-    res.status(200).json(userInfo);
-  });
+export default {
+  login: login,
+  register: register,
 };

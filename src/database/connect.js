@@ -7,6 +7,12 @@ const DB_USER = "root";
 const DB_PASS = "JTtDcNq21OkssQXITafj";
 const MYSQL_DB = "railway";
 
+// const DB_PORT = 3306;
+// const DB_HOST = "localhost";
+// const DB_USER = "root";
+// const DB_PASS = "Ibanez131003@";
+// const MYSQL_DB = "fptblog";
+
 export const db = mysql2.createConnection({
   host: DB_HOST,
   port: DB_PORT,

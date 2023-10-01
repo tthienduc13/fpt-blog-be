@@ -19,9 +19,10 @@ const options = {
       },
     },
     servers: [
-      {
-        url: "https://fpt-blog-be-production.up.railway.app/",
-      },
+      // {
+      //   url: "http://localhost:5000",
+      // },
+      { url: "https://fpt-blog-be-production.up.railway.app/" },
     ],
   },
   apis: ["./src/routes/*.js"],
@@ -30,7 +31,7 @@ const options = {
 const spacs = swaggerJsdoc(options);
 
 const initRoutes = (app) => {
-  app.use("/", swaggerUi.serve, swaggerUi.setup(spacs));
+  app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(spacs));
   app.use("/api/auth", authRoutes);
   app.use("/api/comments", commentsRoutes);
   app.use("/api/likes", likesRoutes);
