@@ -82,11 +82,11 @@ const login = (req, res) => {
 
     if (!checkPassword) return res.status(400).json("Wrong password or email");
 
-    // if (!data[0].isVerified) {
-    //   return res
-    //     .status(401)
-    //     .json("Account not verified. Please verify your email.");
-    // }
+    if (!data[0].isVerified) {
+      return res
+        .status(422)
+        .json("Account not verified. Please verify your email.");
+    }
 
     const token = jwt.sign(
       {
