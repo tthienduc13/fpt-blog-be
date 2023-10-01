@@ -84,7 +84,7 @@ const login = (req, res) => {
 
     if (!data[0].isVerified) {
       return res
-        .status(400)
+        .status(422)
         .json("Account not verified. Please verify your email.");
     }
 
