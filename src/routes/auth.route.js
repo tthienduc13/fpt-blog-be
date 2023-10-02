@@ -99,5 +99,36 @@ router.post("/register", authController.register);
  *         description: Internal server error
  */
 router.get("/verify", authController.verify);
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   patch:
+ *     summary: Change user password
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               email:
+ *                 type: string
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *             example:
+ *               email: user@example.com
+ *               oldPassword: oldPassword123
+ *               newPassword: newPassword123
+ *     responses:
+ *       200:
+ *         description: Password change successful
+ *       400:
+ *         description: Invalid email, old password, or new password
+ *       500:
+ *         description: Internal server error
+ */
+
 router.patch("/change-password", authController.changePassword);
 export default router;
