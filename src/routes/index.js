@@ -19,10 +19,10 @@ const options = {
       },
     },
     servers: [
-      // {
-      //   url: "http://localhost:5000",
-      // },
-      { url: "https://fpt-blog-be-production.up.railway.app/" },
+      {
+        url: "http://localhost:5000",
+      },
+      // { url: "https://fpt-blog-be-production.up.railway.app/" },
     ],
   },
   apis: ["./src/routes/*.js"],
