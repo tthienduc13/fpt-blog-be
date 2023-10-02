@@ -34,10 +34,267 @@ const register = (req, res) => {
         if (!err) {
           let mailSubject = "FUBLOG Community verification email!";
           const token = hashedEmail;
-          let content = `
-          <a class="button" href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}">
-                  Verify Account
-                </a>
+          let content = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+          <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+                integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+              />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>Document</title>
+              <style type="text/css">
+                body {
+                  height: 100%;
+                  margin: 0;
+                  background: white;
+                }
+                table {
+                  border-spacing: 0;
+                }
+                td {
+                  padding: 0;
+                }
+                img {
+                  border: 0;
+                }
+                .wrapper {
+                  width: 100%;
+                  table-layout: fixed;
+                  background-color: #dddd;
+                }
+                .main {
+                  background-color: white;
+                  margin: 0 auto;
+                  width: 100%;
+                  max-width: 600px;
+                  border-spacing: 0;
+                  font-family: sans-serif;
+                  color: #14375f;
+                }
+                .head-line {
+                  height: 12px;
+                  background-color: #f27024;
+                }
+                .header {
+                  width: 100%;
+                }
+                .column {
+                  width: 100%;
+                  max-width: 600px;
+                  vertical-align: top;
+                  text-align: center;
+                }
+                .header-section {
+                  padding: 14px 0 4px;
+                }          
+                .logo-icon {
+                  padding-bottom: 10px;
+                  text-align: center;
+                }          
+                .logo-icon img {
+                  width: 180px;
+                }          
+                .social-icon {
+                  padding: 4px 72px;
+                }         
+                .icon {
+                  margin-right: 6px;
+                  font-size: 30px;
+                  color: #0065a9;
+                }          
+                .banner-section {
+                  padding: 30px 0;
+                  text-align: center;
+                  width: 100%;
+                  max-width: 600px;
+                  background-color: #0066b2;
+                }
+                .banner-header {
+                  position: relative;
+                  width: 100%;
+                  height: 100%;
+                }
+                .banner-h1 {
+                  color: white;
+                  text-transform: uppercase;
+                  letter-spacing: 3px;
+                  font-size: 16px;
+                  margin-bottom: 8px;
+                  font-weight: 600;
+                }
+                .banner-icon {
+                  z-index: 100;
+                  width: 48px;
+                  height: 48px;
+                  color: white;
+                  margin-bottom: 12px;
+                }
+                .banner-header::after {
+                  content: "";
+                  background-color: #dddd;
+                  position: absolute;
+                  width: 70px;
+                  top: 45%;
+                  left: 55%;
+                  height: 2px;
+                }
+                .banner-header::before {
+                  content: "";
+                  background-color: #dddd;
+                  position: absolute;
+                  width: 70px;
+                  top: 45%;
+                  right: 55%;
+                  height: 2px;
+                }
+                .banner-h2 {
+                  color: white;
+                  font-size: 36px;
+                }
+                .content-section {
+                  padding: 30px 20px;
+                  text-align: justify;
+                  width: 100%;
+                  max-width: 600px;
+                  background-color: white;
+                  font-weight: 500;
+                }
+                .content-welcome {
+                  text-align: center;
+                  width: 100%;
+                  max-width: 600px;
+                  font-size: 32px;
+                }
+                .welcome-img {
+                  object-fit: cover;
+                  height: 150px;
+                }
+                .content-welcome p {
+                  font-size: 36px;
+                  font-weight: 600;
+                  margin: 0;
+                  letter-spacing: 2px;
+                }
+                .verify-button {
+                  text-align: center;
+                  width: 100%;
+                  max-width: 600px;
+                  margin-top: 60px;
+                  margin-bottom: 60px;
+                }
+                .button {
+                  font-weight: 600;
+                  text-decoration: none;
+                  font-size: 20px;
+                  color: white;
+                  background-color: #0066b2;
+                  padding: 15px 30px;
+                }
+                .button:hover {
+                  opacity: 0.7;
+                }
+                .content2 {
+                  margin-bottom: 10px;
+                }
+                .footer-section {
+                  text-align: center;
+                  width: 100%;
+                  max-width: 600px;
+                  background-color: #0db04b33;
+                  height: 100px;
+                }
+                .footer-content {
+                  color: #22181c;
+                  font-weight: 500;
+                }
+              </style>
+            </head>
+          
+            <body>
+              <center class="wrapper">
+                <table class="main">
+                  <!-- Top border -->
+                  <tr>
+                    <td class="head-line"></td>
+                  </tr>
+                  <!-- Logo section -->
+                  <tr>
+                    <td class="header-section">
+                      <table class="column">
+                        <tr>
+                          <td class="logo-icon">
+                            <a
+                              target="_blank"
+                              href="#"
+                              ><img
+                                src="https://res.cloudinary.com/dyu2kc3bl/image/upload/v1696248927/5b67a23a37e0e2bebbf1_1_uueqjp.png"
+                                alt="fu-blog"
+                            /></a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <!-- Banner section -->
+                  <tr>
+                    <td class="banner-section">
+                    <div class="banner-header">
+                    <img
+                      class="banner-icon"
+                      src="https://res.cloudinary.com/dyu2kc3bl/image/upload/v1696249591/envelope-solid_1_1_r4sn2l.png"
+                    ></img>
+                  </div>
+                      <div class="banner-h1">Thanks for signing with us</div>
+                      <div class="banner-h2">Verify Your E-mail Address</div>
+                    </td>
+                  </tr>
+                  <!-- Content section -->
+                  <tr>
+                    <td class="content-section">
+                      <div class="content-welcome">
+                        <p>Welcome!</p>
+                        <img
+                          class="welcome-img"
+                          src="https://res.cloudinary.com/dyu2kc3bl/image/upload/v1696247290/handshake_vx8vys.png"
+                          alt=""
+                        />
+                      </div>
+                      <div class="content1">
+                        Hi ${req.body.email},<br />
+                        You are almost set to started in FU-BLOG.We need a little more
+                        information to complete your registration, including information
+                        of your email. Simply click the button below to verify your email.
+                      </div>
+                      <div class="verify-button">
+                        <a style="color:white;" class="button" href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}"> Verify email </a>
+                      </div>
+                      <div class="content2">
+                        If that doesn't work, please click <a href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}">here</a>
+                      </div>
+                      <div class="content3">
+                        Cheers, <br />
+                        FU-BLOG
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- Footer section -->
+                  <tr>
+                    <td class="footer-section">
+                      <div class="footer-content" style="padding: 0 20px">
+                        Block E2a-7, D1 Street Saigon Hi-tech Park, Long Thanh My Ward,
+                        District 9, Ho Chi Minh City, Vietnam
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </body>
+          </html>
           `;
           mailer.sendEmail(req.body.email, mailSubject, content);
           return res.status(200).json("User has been created.");
