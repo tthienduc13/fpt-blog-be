@@ -19,9 +19,10 @@ const options = {
       },
     },
     servers: [
-      {
-        url: "http://localhost:5000",
-      },
+      // {
+      //   url: "http://localhost:5000",
+      // },
+      { url: "https://fpt-blog-be-production.up.railway.app/" },
     ],
   },
   apis: ["./src/routes/*.js"],
@@ -36,9 +37,6 @@ const initRoutes = (app) => {
   app.use("/api/likes", likesRoutes);
   app.use("/api/blogs", blogRoutes);
   app.use("/api/users", userRoutes);
-  return app.use("/", (req, res) => {
-    return res.send("server on");
-  });
 };
 
 export default initRoutes;

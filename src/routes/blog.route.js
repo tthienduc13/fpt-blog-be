@@ -23,9 +23,7 @@ router.post("/create", blogController.createBlog);
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref:
+ *
  * /api/blogs/categories/{category_id}:
  *   get:
  *     summary: Get a category by ID
@@ -46,6 +44,46 @@ router.post("/create", blogController.createBlog);
  *
  *       404:
  *         description: Category not found
+ *
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name:  Tag
+ *   description: The Tag API
+ * /api/blogs/tags:
+ *   get:
+ *     summary: Lists all the tags
+ *     tags: [ Tag]
+ *     responses:
+ *       200:
+ *         description: The list of tags
+ *         content:
+ *           application/json:
+ *             schema:
+ *
+ * /api/blogs/tags/{tag_id}:
+ *   get:
+ *     summary: Get a tag by ID
+ *     tags: [ Tag]
+ *     parameters:
+ *       - name: tag_id
+ *         in: path
+ *         description: ID of the tag to retrieve
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: The requested tag
+ *         content:
+ *           application/json:
+ *             schema:
+ *
+ *       404:
+ *         description: Tag not found
+ *
  */
 
 export default router;

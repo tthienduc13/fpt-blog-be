@@ -3,21 +3,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { config as configDotenv } from "dotenv";
+import mailer from "../helpers/sendMail.js";
 configDotenv();
-export const register = (req, res) => {
-  // CHECK IF USER EXISTS
+const register = (req, res) => {
   const q = "SELECT * FROM user WHERE email = ?";
   const user_id = uuidv4();
 
   db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length) return res.status(409).json("User already exists!");
-
-    // CREATE A NEW USER
-    // Hash the password
-    const salt = bcrypt.genSaltSync(11);
+    const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-
+    const hashedEmail = bcrypt.hashSync(req.body.email, salt);
     let role;
     const { email } = req.body;
     if (email.endsWith("@fpt.edu.vn")) {
@@ -27,20 +24,51 @@ export const register = (req, res) => {
     }
 
     const insertQuery =
-      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,0,NOW())";
+      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,?,NOW())";
 
     db.query(
       insertQuery,
-      [user_id, req.body.email, hashedPassword, role],
+      [user_id, req.body.email, hashedPassword, role, false],
       (err, data) => {
         if (err) return res.status(500).json(err);
-        return res.status(200).json("User has been created.");
+        if (!err) {
+          let mailSubject = "FUBLOG Community verification email!";
+          const token = hashedEmail;
+          let content = `
+          <a class="button" href="https://fpt-blog-be-production.up.railway.app/api/auth/verify?email=${req.body.email}&token=${token}">
+                  Verify Account
+                </a>
+          `;
+          mailer.sendEmail(req.body.email, mailSubject, content);
+          return res.status(200).json("User has been created.");
+        }
       }
     );
   });
 };
 
-export const login = (req, res) => {
+const verify = (req, res) => {
+  const email = req.query.email;
+  const token = req.query.token;
+  if (bcrypt.compareSync(email, token)) {
+    db.query(
+      "UPDATE user SET isVerified = ? WHERE email = ?",
+      [true, email],
+      (err, result) => {
+        if (err) {
+          return res.status(400).send({
+            msg: err,
+          });
+        }
+        return res.status(200).json("Account verification successful.");
+      }
+    );
+  } else {
+    return res.status(400).json("Invalid verification token.");
+  }
+};
+
+const login = (req, res) => {
   const q = "SELECT * FROM user WHERE email = ?";
   const rememberStatus = false;
   db.query(q, [req.body.email], (err, data) => {
@@ -53,6 +81,12 @@ export const login = (req, res) => {
     );
 
     if (!checkPassword) return res.status(400).json("Wrong password or email");
+
+    if (!data[0].isVerified) {
+      return res
+        .status(422)
+        .json("Account not verified. Please verify your email.");
+    }
 
     const token = jwt.sign(
       {
@@ -68,23 +102,44 @@ export const login = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
-  res
-    .clearCookie("accessToken", {
-      secure: true,
-      sameSite: "none",
-    })
-    .status(200)
-    .json("User has been logged out");
-};
+const changePassword = (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
 
-export const getUserInfo = (req, res) => {
-  const query = "SELECT * FROM user WHERE user_id = ?";
-  db.query(query, [req.body.user_id], (err, result) => {
-    if (err) return res.status(500).json(err);
-    if (result.length === 0) return res.status(404).json("User not found!");
+  const selectQuery = "SELECT password FROM user WHERE email = ?";
+  db.query(selectQuery, [email], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "An error occurred while retrieving the user's password.",
+      });
+    }
 
-    const userInfo = result[0];
-    res.status(200).json(userInfo);
+    if (result.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const hashedPassword = result[0].password;
+    const isPasswordMatch = bcrypt.compareSync(oldPassword, hashedPassword);
+
+    if (!isPasswordMatch) {
+      return res.status(400).json({ error: "Old password is incorrect." });
+    }
+
+    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+    const updateQuery = "UPDATE user SET password = ? WHERE email = ?";
+    db.query(updateQuery, [hashedNewPassword, email], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ error: "An error occurred while updating the password." });
+      }
+
+      res.status(200).json({ message: "Password updated successfully." });
+    });
   });
+};
+export default {
+  login: login,
+  register: register,
+  verify: verify,
+  changePassword: changePassword,
 };
