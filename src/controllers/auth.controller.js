@@ -35,7 +35,7 @@ const register = (req, res) => {
           let mailSubject = "FUBLOG Community verification email!";
           const token = hashedEmail;
           let content = `
-          <a class="button" href="https://fpt-blog-be-production.up.railway.app/api/auth/verify?email=${req.body.email}&token=${token}">
+          <a class="button" href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}">
                   Verify Account
                 </a>
           `;
