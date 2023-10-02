@@ -12,7 +12,7 @@ const register = (req, res) => {
   db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length) return res.status(409).json("User already exists!");
-    const salt = bcrypt.genSaltSync(11);
+    const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(req.body.password, salt);
     const hashedEmail = bcrypt.hashSync(req.body.email, salt);
     let role;
@@ -102,8 +102,44 @@ const login = (req, res) => {
   });
 };
 
+const changePassword = (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  const selectQuery = "SELECT password FROM user WHERE email = ?";
+  db.query(selectQuery, [email], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "An error occurred while retrieving the user's password.",
+      });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const hashedPassword = result[0].password;
+    const isPasswordMatch = bcrypt.compareSync(oldPassword, hashedPassword);
+
+    if (!isPasswordMatch) {
+      return res.status(400).json({ error: "Old password is incorrect." });
+    }
+
+    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+    const updateQuery = "UPDATE user SET password = ? WHERE email = ?";
+    db.query(updateQuery, [hashedNewPassword, email], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ error: "An error occurred while updating the password." });
+      }
+
+      res.status(200).json({ message: "Password updated successfully." });
+    });
+  });
+};
 export default {
   login: login,
   register: register,
   verify: verify,
+  changePassword: changePassword,
 };

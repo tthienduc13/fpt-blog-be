@@ -99,4 +99,5 @@ router.post("/register", authController.register);
  *         description: Internal server error
  */
 router.get("/verify", authController.verify);
+router.patch("/change-password", authController.changePassword);
 export default router;
