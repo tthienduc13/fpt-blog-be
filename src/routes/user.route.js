@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/profile", userController.getAllUsers);
 router.get("/profile/:user_id", userController.getUserInfo);
+router.delete("/profile/:user_id", userController.deleteUser);
 
 /**
  * @swagger
@@ -40,6 +41,22 @@ router.get("/profile/:user_id", userController.getUserInfo);
  *           application/json:
  *             schema:
  *
+ *       404:
+ *         description: Profile not found
+
+ *   delete:
+ *     summary: Delete a profile by ID
+ *     tags: [Profile]
+ *     parameters:
+ *       - name: user_id
+ *         in: path
+ *         description: ID of the profile to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Profile deleted successfully
  *       404:
  *         description: Profile not found
  *
