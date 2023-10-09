@@ -3,6 +3,7 @@ import blogRoutes from "./blog.route.js";
 import authRoutes from "./auth.route.js";
 import commentsRoutes from "./comments.route.js";
 import likesRoutes from "./likes.route.js";
+import moderatorRoutes from "./moderator.route.js";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 const options = {
@@ -36,6 +37,7 @@ const initRoutes = (app) => {
   app.use("/api/likes", likesRoutes);
   app.use("/api/blogs", blogRoutes);
   app.use("/api/users", userRoutes);
+  app.use("/api/moderator", moderatorRoutes);
 };
 
 export default initRoutes;
