@@ -232,7 +232,7 @@ const register = (req, res) => {
                               target="_blank"
                               href="#"
                               ><img
-                                src="https://res.cloudinary.com/dyu2kc3bl/image/upload/v1696248927/5b67a23a37e0e2bebbf1_1_uueqjp.png"
+                                src="https://res.cloudinary.com/dyu2kc3bl/image/upload/v1696496537/5b67a23a37e0e2bebbf1_1-removebg-preview_n7joud.png"
                                 alt="fu-blog"
                             /></a>
                           </td>
