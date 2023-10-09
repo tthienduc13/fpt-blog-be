@@ -88,7 +88,20 @@ const createBlog = (req, res) => {
         console.error(err);
         return res.status(500).json(err);
       }
-      return res.status(200).json("Blog sent to server");
+
+      const createdBlog = {
+        blog_id: blog_id, // Include the blog_id in the created blog object
+        user_id: req.body.user_id,
+        blogTitle: req.body.blogTitle,
+        category_id: req.body.category_id,
+        content: req.body.content,
+        status: req.body.status,
+        view: defaultViewCount,
+        visual: req.body.visual,
+        created_at: new Date().toISOString(),
+      };
+
+      return res.status(200).json(createdBlog); // Return the created blog object
     }
   );
 };
@@ -104,6 +117,26 @@ const getPostedBlog = (req, res) => {
   });
 };
 
+const createBlogTags = (req, res) => {
+  const { blog_id, tags } = req.body;
+  const blogTagsIds = tags.map(() => uuidv4());
+  const blogTagsValues = tags.map((tag, index) => [
+    blogTagsIds[index],
+    blog_id,
+    tag,
+  ]);
+
+  const query =
+    "INSERT INTO blog_tags (blog_tags_id, blog_id, tag_id) VALUES ?";
+  db.query(query, [blogTagsValues], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json({ message: "Blog tags created successfully" });
+  });
+};
+
 export default {
   getAllCategory,
   getAllTag,
@@ -112,4 +145,5 @@ export default {
   getCategoryById,
   getPostedBlog,
   getTagByCategory,
+  createBlogTags,
 };
