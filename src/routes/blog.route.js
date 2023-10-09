@@ -9,6 +9,47 @@ router.get("/tags/:tag_id", blogController.getTagById);
 router.get("/tags/category/:category_id", blogController.getTagByCategory);
 
 router.post("/create", blogController.createBlog);
+/**
+ * @swagger
+ * tags:
+ *   name: Blog
+ *   description: The Blog API
+ * /api/blogs/create/blog-tags:
+ *   post:
+ *     summary: Create blog tags
+ *     tags: [Blog]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               blog_id:
+ *                 type: string
+ *                 description: The ID of the blog
+ *               tags:
+ *                 type: array
+ *                 description: An array of tags
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     tag_id:
+ *                       type: string
+ *                       description: The ID of the tag
+ *             example:
+ *               blog_id: 12345678-1234-1234-1234-123456789abc
+ *               tags:
+ *                 - tag_id: 11111111-1111-1111-1111-111111111111
+ *                 - tag_id: 22222222-2222-2222-2222-222222222222
+ *                 - tag_id: 33333333-3333-3333-3333-333333333333
+ *     responses:
+ *       200:
+ *         description: Blog tags created successfully
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/create/blog-tags", blogController.createBlogTags);
 router.get("/posted/:user_id", blogController.getPostedBlog);
 
 /**
