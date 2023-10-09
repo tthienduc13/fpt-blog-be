@@ -6,7 +6,10 @@ router.get("/categories", blogController.getAllCategory);
 router.get("/categories/:category_id", blogController.getCategoryById);
 router.get("/tags", blogController.getAllTag);
 router.get("/tags/:tag_id", blogController.getTagById);
+router.get("/tags/category/:category_id", blogController.getTagByCategory);
+
 router.post("/create", blogController.createBlog);
+router.get("/posted/:user_id", blogController.getPostedBlog);
 
 /**
  * @swagger
@@ -34,7 +37,7 @@ router.post("/create", blogController.createBlog);
  *         description: ID of the category to retrieve
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: The requested category
@@ -73,7 +76,28 @@ router.post("/create", blogController.createBlog);
  *         description: ID of the tag to retrieve
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The requested tag
+ *         content:
+ *           application/json:
+ *             schema:
+ *
+ *       404:
+ *         description: Tag not found
+ *
+ * /api/blogs/tags/category/{category_id}:
+ *   get:
+ *     summary: Get tags by category
+ *     tags: [ Tag]
+ *     parameters:
+ *       - name: category_id
+ *         in: path
+ *         description: ID of the tag to retrieve
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: The requested tag

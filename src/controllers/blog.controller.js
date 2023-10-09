@@ -53,18 +53,31 @@ const getTagById = (req, res) => {
   });
 };
 
+const getTagByCategory = (req, res) => {
+  const query = "SELECT * FROM tag where category_id = ?";
+  const category_id = req.params.category_id;
+  db.query(query, [category_id], (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
 const createBlog = (req, res) => {
   const blog_id = uuidv4();
   const defaultViewCount = 0;
   const query =
-    "INSERT INTO blog (blog_id, user_id, blog_title, content, status, view, visual, created_at) VALUES (?,?,?,?,?,?,?,NOW())";
+    "INSERT INTO blog (blog_id, user_id, blog_title, category_id, content, status, view, visual, created_at) VALUES (?,?,?,?,?,?,?,?,NOW())";
 
   db.query(
     query,
     [
       blog_id,
       req.body.user_id,
-      req.body.blog_title,
+      req.body.blogTitle,
+      req.body.category_id,
       req.body.content,
       req.body.status,
       defaultViewCount,
@@ -80,10 +93,23 @@ const createBlog = (req, res) => {
   );
 };
 
+const getPostedBlog = (req, res) => {
+  const query = "SELECT * FROM blog WHERE user_id = ?";
+  db.query(query, [req.params.user_id], (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
 export default {
   getAllCategory,
   getAllTag,
   getTagById,
   createBlog,
   getCategoryById,
+  getPostedBlog,
+  getTagByCategory,
 };
