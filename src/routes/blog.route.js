@@ -151,4 +151,6 @@ router.get("/posted/:user_id", blogController.getPostedBlog);
  *
  */
 
+router.get("/pending", blogController.getPendingBLog);
+
 export default router;

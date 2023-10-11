@@ -131,4 +131,7 @@ router.get("/verify", authController.verify);
  */
 
 router.patch("/change-password", authController.changePassword);
+
+router.post("/forgot-password", authController.forgotPassword);
+
 export default router;
