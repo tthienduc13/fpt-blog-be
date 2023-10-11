@@ -117,6 +117,17 @@ const getPostedBlog = (req, res) => {
   });
 };
 
+const getPendingBLog = (req, res) => {
+  const query = "SELECT * FROM blog WHERE status = 0";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
 const createBlogTags = (req, res) => {
   const { blog_id, tags } = req.body;
   const blogTagsIds = tags.map(() => uuidv4());
@@ -146,4 +157,5 @@ export default {
   getPostedBlog,
   getTagByCategory,
   createBlogTags,
+  getPendingBLog,
 };
