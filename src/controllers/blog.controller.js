@@ -53,18 +53,31 @@ const getTagById = (req, res) => {
   });
 };
 
+const getTagByCategory = (req, res) => {
+  const query = "SELECT * FROM tag where category_id = ?";
+  const category_id = req.params.category_id;
+  db.query(query, [category_id], (err, data) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
 const createBlog = (req, res) => {
   const blog_id = uuidv4();
   const defaultViewCount = 0;
   const query =
-    "INSERT INTO blog (blog_id, user_id, blog_title, content, status, view, visual, created_at) VALUES (?,?,?,?,?,?,?,NOW())";
+    "INSERT INTO blog (blog_id, user_id, blog_title, category_id, content, status, view, visual, created_at) VALUES (?,?,?,?,?,?,?,?,NOW())";
 
   db.query(
     query,
     [
       blog_id,
       req.body.user_id,
-      req.body.blog_title,
+      req.body.blogTitle,
+      req.body.category_id,
       req.body.content,
       req.body.status,
       defaultViewCount,
@@ -75,9 +88,64 @@ const createBlog = (req, res) => {
         console.error(err);
         return res.status(500).json(err);
       }
-      return res.status(200).json("Blog sent to server");
+
+      const createdBlog = {
+        blog_id: blog_id, // Include the blog_id in the created blog object
+        user_id: req.body.user_id,
+        blogTitle: req.body.blogTitle,
+        category_id: req.body.category_id,
+        content: req.body.content,
+        status: req.body.status,
+        view: defaultViewCount,
+        visual: req.body.visual,
+        created_at: new Date().toISOString(),
+      };
+
+      return res.status(200).json(createdBlog); // Return the created blog object
     }
   );
+};
+
+const getPostedBlog = (req, res) => {
+  const query = "SELECT * FROM blog WHERE user_id = ?";
+  db.query(query, [req.params.user_id], (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
+const getPendingBLog = (req, res) => {
+  const query = "SELECT * FROM blog WHERE status = 0";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json(data);
+  });
+};
+
+const createBlogTags = (req, res) => {
+  const { blog_id, tags } = req.body;
+  const blogTagsIds = tags.map(() => uuidv4());
+  const blogTagsValues = tags.map((tag, index) => [
+    blogTagsIds[index],
+    blog_id,
+    tag,
+  ]);
+
+  const query =
+    "INSERT INTO blog_tags (blog_tags_id, blog_id, tag_id) VALUES ?";
+  db.query(query, [blogTagsValues], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    return res.status(200).json({ message: "Blog tags created successfully" });
+  });
 };
 
 export default {
@@ -86,4 +154,8 @@ export default {
   getTagById,
   createBlog,
   getCategoryById,
+  getPostedBlog,
+  getTagByCategory,
+  createBlogTags,
+  getPendingBLog,
 };
