@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/profile", userController.getAllUsers);
 router.get("/profile/:user_id", userController.getUserInfo);
 router.delete("/profile/:user_id", userController.deleteUser);
-
+router.post("/profile", userController.updateProfile); 
 /**
  * @swagger
  * tags:
@@ -61,5 +61,10 @@ router.delete("/profile/:user_id", userController.deleteUser);
  *         description: Profile not found
  *
  */
+
+
+
+
+
 
 export default router;

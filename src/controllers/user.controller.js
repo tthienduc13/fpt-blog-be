@@ -1,3 +1,4 @@
+import { query } from "express";
 import { db } from "../database/connect.js";
 
 const getAllUsers = (req, res) => {
@@ -34,8 +35,29 @@ const deleteUser = (req, res) => {
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "You have deleted successfully" });
   });
 };
 
-export default { getUserInfo, getAllUsers, deleteUser };
+const updateProfile = (req, res) => {
+  let firstname = req.body.firstname;
+  let lastname = req.body.lastname;
+  let deparment = req.body.deparment;
+  let major = req.body.major;
+  let avatar = req.body.avatar;
+  const query = "Update user set = ? where = ?";
+  db.query(query, [firstname, lastname, deparment, major, avatar]), (err, results) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({ message: "Your profile updated successfully" });
+  }
+};
+
+
+
+
+  export default { getUserInfo, getAllUsers, deleteUser, updateProfile};
