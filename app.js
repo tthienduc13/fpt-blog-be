@@ -24,7 +24,7 @@ app.use(
 );
 
 app.use(
-  bodyParser.raw({ inflate: true, limit: "100kb", type: "application/json" })
+  bodyParser.raw({ inflate: true, limit: "30mb", type: "application/json" })
 );
 app.use(cors());
 app.use(cookieParser());

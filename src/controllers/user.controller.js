@@ -38,4 +38,37 @@ const deleteUser = (req, res) => {
   });
 };
 
-export default { getUserInfo, getAllUsers, deleteUser };
+const updateAvatar = (req, res) => {
+  const user_id = req.params.user_id;
+  const query = "UPDATE user SET image = ? WHERE user_id = ?";
+  db.query(query, [req.body.image, user_id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    res.status(200).json({ message: "Update avatar successfully" });
+  });
+};
+
+const updateInfo = (req, res) => {
+  const user_id = req.params.user_id;
+  const updateData = req.body;
+
+  const query = "UPDATE user SET ? WHERE user_id = ?";
+
+  db.query(query, [updateData, user_id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to update user information" });
+    } else {
+      res
+        .status(200)
+        .json({ message: "User information updated successfully" });
+    }
+  });
+};
+
+export default {
+  getUserInfo,
+  getAllUsers,
+  deleteUser,
+  updateAvatar,
+  updateInfo,
+};

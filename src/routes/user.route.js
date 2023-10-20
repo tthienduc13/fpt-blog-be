@@ -6,6 +6,8 @@ const router = express.Router();
 router.get("/profile", userController.getAllUsers);
 router.get("/profile/:user_id", userController.getUserInfo);
 router.delete("/profile/:user_id", userController.deleteUser);
+router.post("/profile/update-avatar/:user_id", userController.updateAvatar);
+router.post("/profile/update-info/:user_id", userController.updateInfo);
 
 /**
  * @swagger

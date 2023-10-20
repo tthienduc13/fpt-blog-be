@@ -350,6 +350,7 @@ const login = (req, res) => {
         email: data[0].email,
         sub: data[0].user_id,
         UserRole: data[0].role_id,
+        firstName: data[0].first_name,
         "remember-me": rememberStatus,
       },
       process.env.SECRET_KEY
