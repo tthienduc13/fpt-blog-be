@@ -16,7 +16,7 @@ const getAllCategory = (req, res) => {
   });
 };
 
-export const getCategoryById = (req, res) => {
+const getCategoryById = (req, res) => {
   const query = "SELECT * FROM category where category_id = ?";
   const category_id = req.params.category_id;
   db.query(query, [category_id], (err, data) => {
@@ -106,20 +106,65 @@ const createBlog = (req, res) => {
   );
 };
 
-const getPostedBlog = (req, res) => {
-  const query = "SELECT * FROM blog WHERE user_id = ?";
-  db.query(query, [req.params.user_id], (err, data) => {
+const getPendingBlog = (req, res) => {
+  const status = 0; // Pending status (adjust if needed)
+
+  const query = `
+    SELECT
+        b.blog_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        b.blog_title,
+        c.description AS category_description,
+        b.content,
+        b.status,
+        b.view,
+        b.visual,
+        b.created_at,
+        b.published_at,
+        GROUP_CONCAT(t.title) AS tag_titles
+    FROM
+        blog b
+    LEFT JOIN
+        category c
+    ON
+        b.category_id = c.category_id
+    LEFT JOIN
+        user u
+    ON
+        b.user_id = u.user_id
+    LEFT JOIN
+        blog_tags bt
+    ON
+        b.blog_id = bt.blog_id
+    LEFT JOIN
+        tag t
+    ON
+        bt.tag_id = t.tag_id
+    WHERE
+        b.status = ?
+    GROUP BY
+        b.blog_id
+    ORDER BY
+        b.created_at DESC;
+  `;
+
+  db.query(query, [status], (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).json(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      data.forEach((blog) => {
+        blog.tag_titles = blog.tag_titles.split(",");
+      });
+      return res.status(200).json(data);
     }
-    return res.status(200).json(data);
   });
 };
 
-const getPendingBLog = (req, res) => {
-  const query = "SELECT * FROM blog WHERE status = 0";
-  db.query(query, (err, data) => {
+const getPostedBlog = (req, res) => {
+  const query =
+    "SELECT * FROM blog WHERE user_id = ? ORDER BY published_at DESC";
+  db.query(query, [req.params.user_id], (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).json(err);
@@ -148,8 +193,85 @@ const createBlogTags = (req, res) => {
   });
 };
 
+const approveBlog = (req, res) => {
+  const query =
+    "UPDATE blog SET status = 1, published_at = NOW() WHERE blog_id = ?";
+  db.query(query, [req.params.blog_id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+    return res.status(200).json("Successfully publish blog");
+  });
+};
+
+const rejectBlog = (req, res) => {
+  const query =
+    "UPDATE blog SET status = 2, published_at = NOW() WHERE blog_id = ?";
+  db.query(query, [req.params.blog_id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+    return res.status(200).json("Successfully reject blog");
+  });
+};
+
+const getBlogWithTags = (req, res) => {
+  const query = `
+    SELECT
+        b.blog_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        b.blog_title,
+        c.description AS category_description,
+        b.content,
+        b.status,
+        b.view,
+        b.visual,
+        b.created_at,
+        b.published_at,
+        GROUP_CONCAT(t.title) AS tag_titles
+    FROM
+        blog b
+    LEFT JOIN
+        category c
+    ON
+        b.category_id = c.category_id
+    LEFT JOIN
+        user u
+    ON
+        b.user_id = u.user_id
+    LEFT JOIN
+        blog_tags bt
+    ON
+        b.blog_id = bt.blog_id
+    LEFT JOIN
+        tag t
+    ON
+        bt.tag_id = t.tag_id
+    WHERE
+        b.blog_id = ?
+    GROUP BY
+        b.blog_id;
+  `;
+
+  const blogId = req.params.blog_id;
+
+  db.query(query, [blogId], (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    if (data.length === 0) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+    data[0].tag_titles = data[0].tag_titles.split(",");
+
+    return res.status(200).json(data[0]);
+  });
+};
+
 export default {
   getAllCategory,
+  getPendingBlog,
   getAllTag,
   getTagById,
   createBlog,
@@ -157,5 +279,7 @@ export default {
   getPostedBlog,
   getTagByCategory,
   createBlogTags,
-  getPendingBLog,
+  approveBlog,
+  rejectBlog,
+  getBlogWithTags,
 };
