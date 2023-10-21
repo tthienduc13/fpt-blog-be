@@ -27,6 +27,7 @@
     "nodemailer-express-handlebars": "^6.1.0",
     "nodemailer-juice": "^1.0.1",
     "sequelize": "^6.33.0",
+    "socket.io": "^4.7.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1"

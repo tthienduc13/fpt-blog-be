@@ -12,6 +12,20 @@ const getAllUsers = (req, res) => {
   });
 };
 
+const getMentionData = (req, res) => {
+  const query =
+    "SELECT user_id as id, CONCAT(first_name, ' ', last_name) as display FROM user";
+
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+
+    return res.status(200).json(data);
+  });
+};
+
 const getUserInfo = (req, res) => {
   const user_id = req.params.user_id;
   const query = "SELECT * FROM user WHERE user_id = ?";
@@ -71,4 +85,5 @@ export default {
   deleteUser,
   updateAvatar,
   updateInfo,
+  getMentionData,
 };
