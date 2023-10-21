@@ -1,11 +1,11 @@
 import mysql2 from "mysql2";
 import { config as configDotenv } from "dotenv";
 configDotenv();
-const DB_PORT = 3306;
-const DB_HOST = "localhost";
+const DB_PORT = 8040;
+const DB_HOST = "containers-us-west-56.railway.app";
 const DB_USER = "root";
-const DB_PASS = "123456";
-const MYSQL_DB = "fptblog";
+const DB_PASS = "abwULYGESfU1m6QT03wn";
+const MYSQL_DB = "railway";
 
 export const db = mysql2.createConnection({
   host: DB_HOST,

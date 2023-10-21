@@ -4,10 +4,21 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { config as configDotenv } from "dotenv";
 import initRoutes from "./src/routes/index.js";
+import http from "http"; // Import thư viện http
+import { Server } from "socket.io"; // Import thư viện socket.io
+import commentControllet from "./src/controllers/commentRealTime.js";
+
 configDotenv();
 const app = express();
+const server = http.createServer(app); // Tạo máy chủ HTTP từ ứng dụng Express
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+  },
+});
 
-//middleware
+// Middleware
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
@@ -22,15 +33,17 @@ app.use(
     extended: true,
   })
 );
-
 app.use(
   bodyParser.raw({ inflate: true, limit: "30mb", type: "application/json" })
 );
 app.use(cors());
 app.use(cookieParser());
 
+// Gắn Socket.IO vào ứng dụng Express
+commentControllet(io);
+
 initRoutes(app);
 
-app.listen(process.env.APP_PORT, () => {
+server.listen(process.env.APP_PORT, () => {
   console.log(`App is listening on ${process.env.APP_PORT}`);
 });

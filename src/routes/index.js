@@ -1,7 +1,7 @@
 import userRoutes from "./user.route.js";
 import blogRoutes from "./blog.route.js";
 import authRoutes from "./auth.route.js";
-import commentsRoutes from "./comments.route.js";
+// import commentsRoutes from "./comments.route.js";
 import likesRoutes from "./likes.route.js";
 import moderatorRoutes from "./moderator.route.js";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -33,7 +33,7 @@ const spacs = swaggerJsdoc(options);
 const initRoutes = (app) => {
   app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(spacs));
   app.use("/api/auth", authRoutes);
-  app.use("/api/comments", commentsRoutes);
+  // app.use("/api/comments", commentsRoutes);
   app.use("/api/likes", likesRoutes);
   app.use("/api/blogs", blogRoutes);
   app.use("/api/users", userRoutes);
