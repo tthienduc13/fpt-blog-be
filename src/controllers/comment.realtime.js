@@ -1,38 +1,10 @@
 import { db } from "../database/connect.js";
 import { v4 as uuidv4 } from "uuid";
 
-const getAllComments = (blog_id, callback) => {
-  const query = `
-    SELECT
-      C.comment_id,
-      C.content,
-      C.created_at,
-      CONCAT(U.last_name, ' ', U.first_name) AS user_name,
-      U.image AS user_image
-    FROM comment AS C
-    INNER JOIN user AS U
-    ON C.user_id = U.user_id
-    WHERE C.blog_id = ?
-    ORDER BY C.created_at DESC;
-  `;
-
-  db.query(query, [blog_id], (err, results) => {
-    if (err) {
-      console.error("Error fetching comments:", err);
-      callback(err, null);
-    } else {
-      console.log("Fetched comments successfully");
-      callback(null, results);
-    }
-  });
-};
-
 const commentController = (io) => {
   io.on("connection", (socket) => {
     console.log("A user connected to comment controller");
-
     socket.on("new-comment", (newComment) => {
-      console.log("Received new comment:", newComment);
       const comment_id = uuidv4();
       const query =
         "INSERT INTO comment (comment_id, blog_id, user_id, content, created_at, isArchived) VALUES (?, ?, ?, ?, NOW(), false);";
@@ -60,6 +32,85 @@ const commentController = (io) => {
             };
             io.emit("comment-updated", addedComment);
           }
+        }
+      );
+    });
+
+    socket.on("reply", (replyComment) => {
+      const commentReply_id = uuidv4();
+      const query =
+        "INSERT INTO comment_reply (commentReply_id, user_id, comment_id, content, isArchived, created_at) VALUES (?, ?, ?, ?,false , NOW()); ";
+      db.query(
+        query,
+        [
+          commentReply_id,
+          replyComment.user_id,
+          replyComment.comment_id,
+          replyComment.content,
+        ],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json(err);
+          }
+          io.emit("replied");
+        }
+      );
+    });
+
+    socket.on("like", (newLike) => {
+      const like_id = uuidv4();
+      const query =
+        "INSERT INTO blog_like (like_id, user_id, blog_id, created_at) VALUES (?,?,?,NOW())";
+      db.query(
+        query,
+        [like_id, newLike.user_id, newLike.blog_id],
+        (err, result) => {
+          if (err) {
+            console.log("Error like blog:", err);
+          }
+          io.emit("liked");
+        }
+      );
+    });
+
+    socket.on("unlike", (unLike) => {
+      const query = `DELETE FROM blog_like WHERE user_id = ? AND blog_id = ?;`;
+      db.query(query, [unLike.user_id, unLike.blog_id], (err, result) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json(err);
+        }
+        io.emit("unliked");
+      });
+    });
+
+    socket.on("like-comment", (newCommentLike) => {
+      const like_id = uuidv4();
+      const query =
+        "INSERT INTO comment_like (like_id, user_id, comment_id, created_at) VALUES (?,?,?,NOW())";
+      db.query(
+        query,
+        [like_id, newCommentLike.user_id, newCommentLike.comment_id],
+        (err, result) => {
+          if (err) {
+            console.log("Error like comment:", err);
+          }
+          io.emit("comment-liked");
+        }
+      );
+    });
+
+    socket.on("unlike-comment", (unLikeComment) => {
+      const query = `DELETE FROM comment_like WHERE user_id = ? AND comment_id = ?;`;
+      db.query(
+        query,
+        [unLikeComment.user_id, unLikeComment.comment_id],
+        (err, result) => {
+          if (err) {
+            console.log("Error unlike comment", err);
+          }
+          io.emit("comment-unliked");
         }
       );
     });
