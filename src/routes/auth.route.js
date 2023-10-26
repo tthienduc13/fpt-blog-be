@@ -130,8 +130,10 @@ router.get("/verify", authController.verify);
  *         description: Internal server error
  */
 
-router.patch("/change-password", authController.changePassword);
+router.patch("/reset-password", authController.resetPassword);
 
 router.post("/forgot-password", authController.forgotPassword);
+
+router.patch("/change-password", authController.changePassword);
 
 export default router;

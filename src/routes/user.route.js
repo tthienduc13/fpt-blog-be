@@ -10,6 +10,9 @@ router.delete("/profile/:user_id", userController.deleteUser);
 router.post("/profile/update-avatar/:user_id", userController.updateAvatar);
 router.post("/profile/update-info/:user_id", userController.updateInfo);
 
+router.get("/profile-info/:user_id", userController.getUserProfile);
+router.patch("/profile/update-bio/:user_id", userController.updateBio);
+
 /**
  * @swagger
  * tags:

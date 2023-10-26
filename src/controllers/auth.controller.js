@@ -18,9 +18,9 @@ const register = (req, res) => {
     let role;
     const { email } = req.body;
     if (email.endsWith("@fpt.edu.vn")) {
-      role = 1;
+      role = 0;
     } else if (email.endsWith("@fe.edu.vn")) {
-      role = 2;
+      role = 1;
     }
 
     const insertQuery =
@@ -624,6 +624,42 @@ const forgotPassword = (req, res) => {
 };
 
 const changePassword = (req, res) => {
+  const { user_id, oldPassword, newPassword } = req.body;
+  const selectQuery = "SELECT password FROM user WHERE user_id = ?";
+  db.query(selectQuery, [user_id], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "An error occurred while retrieving the user's password.",
+      });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    const hashedPasswordFromDatabase = result[0].password;
+    const passwordMatches = bcrypt.compareSync(
+      oldPassword,
+      hashedPasswordFromDatabase
+    );
+
+    if (!passwordMatches) {
+      return res.status(401).json({ error: "Old password does not match." });
+    }
+    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+    const updateQuery = "UPDATE user SET password = ? WHERE user_id = ?";
+    db.query(updateQuery, [hashedNewPassword, user_id], (err, result) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ error: "An error occurred while updating the password." });
+      }
+
+      res.status(200).json({ message: "Password updated successfully." });
+    });
+  });
+};
+
+const resetPassword = (req, res) => {
   const { user_id, newPassword } = req.body;
 
   const selectQuery = "SELECT password FROM user WHERE user_id = ?";
@@ -653,6 +689,7 @@ export default {
   login: login,
   register: register,
   verify: verify,
-  changePassword: changePassword,
+  resetPassword: resetPassword,
   forgotPassword: forgotPassword,
+  changePassword: changePassword,
 };
