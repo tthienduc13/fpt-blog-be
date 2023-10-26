@@ -269,6 +269,11 @@ const getBlogWithTags = (req, res) => {
   });
 };
 
+const saveBLog = (req, res) => {
+  const blog_id = req.params.blog_id;
+  
+};
+
 export default {
   getAllCategory,
   getPendingBlog,

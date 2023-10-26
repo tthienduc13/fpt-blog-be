@@ -79,11 +79,52 @@ const updateInfo = (req, res) => {
   });
 };
 
+const getUserProfile = (req, res) => {
+  const user_id = req.params.user_id;
+  const query = `SELECT
+  u.user_id AS user_id,
+  u.first_name AS first_name,
+  u.last_name AS last_name,
+  COALESCE(u.bio, '') AS bio,
+  COALESCE(u.department, '') AS department,
+  u.position AS position,
+  r.role_name AS role,
+  COALESCE(u.image, '') AS image,
+  u.created_at AS created_at
+FROM user u
+LEFT JOIN role r ON u.role_id = r.role_id
+WHERE u.user_id = ?;
+
+`;
+  db.query(query, [user_id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    if (data.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    return res.json(data);
+  });
+};
+
+const updateBio = (req, res) => {
+  const user_id = req.params.user_id;
+  const query = "UPDATE user SET bio = ? WHERE user_id = ?";
+  db.query(query, [req.body.bio, user_id], (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to update user bio" });
+    } else {
+      res.status(200).json({ message: "Bio updated successfully" });
+    }
+  });
+};
+
 export default {
+  getUserProfile,
   getUserInfo,
   getAllUsers,
   deleteUser,
   updateAvatar,
   updateInfo,
   getMentionData,
+  updateBio,
 };
