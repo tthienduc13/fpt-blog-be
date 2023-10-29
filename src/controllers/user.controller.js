@@ -87,6 +87,7 @@ const getUserProfile = (req, res) => {
   u.last_name AS last_name,
   COALESCE(u.bio, '') AS bio,
   COALESCE(u.department, '') AS department,
+  u.major AS major,
   u.position AS position,
   r.role_name AS role,
   COALESCE(u.image, '') AS image,

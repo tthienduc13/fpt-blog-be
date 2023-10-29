@@ -36,6 +36,24 @@ const commentController = (io) => {
       );
     });
 
+    socket.on("delete-comment", (deleteComment) => {
+      const query =
+        "DELETE FROM comment WHERE user_id = ? and comment_id = ? ;";
+
+      db.query(
+        query,
+        [deleteComment.user_id, deleteComment.comment_id ],
+        (err, result) => {
+          if (err) {
+            console.error("Error deleting comment:", err);
+          } else {
+            console.log("Comment deleted successfully");
+            io.emit("comment-updated");
+          }
+        }
+      );
+    });
+
     socket.on("reply", (replyComment) => {
       const commentReply_id = uuidv4();
       const query =
