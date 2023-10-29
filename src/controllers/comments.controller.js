@@ -46,6 +46,7 @@ const getCommentByBlog = (req, res) => {
           C.comment_id,
           C.content,
           C.created_at,
+          u.user_id as user_id,
           CONCAT(U.last_name, ' ', U.first_name) AS user_name,
           U.image AS user_image
       FROM
