@@ -107,7 +107,16 @@ const createBlog = (req, res) => {
 };
 
 const getPendingBlog = (req, res) => {
-  const status = 0; // Pending status (adjust if needed)
+  const status = 0;
+  const page = parseInt(req.query.page); // Use req.query to access the page parameter
+  const page_size = 6; // Define the desired number of results per page
+  const offset = (page - 1) * page_size;
+
+  const countQuery = `
+    SELECT COUNT(*) AS total_count
+    FROM blog
+    WHERE status = ?;
+  `;
 
   const query = `
     SELECT
@@ -145,18 +154,33 @@ const getPendingBlog = (req, res) => {
     GROUP BY
         b.blog_id
     ORDER BY
-        b.created_at DESC;
+        b.created_at DESC
+    LIMIT
+        ?
+    OFFSET
+        ?;
   `;
 
-  db.query(query, [status], (err, data) => {
-    if (err) {
-      console.error(err);
+  db.query(countQuery, [status], (countErr, countData) => {
+    if (countErr) {
+      console.error(countErr);
       return res.status(500).json({ error: "Internal Server Error" });
     } else {
-      data.forEach((blog) => {
-        blog.tag_titles = blog.tag_titles.split(",");
+      const total_count = countData[0].total_count;
+      const total_pages = Math.ceil(total_count / page_size);
+
+      db.query(query, [status, page_size, offset], (queryErr, data) => {
+        if (queryErr) {
+          console.error(queryErr);
+          return res.status(500).json({ error: "Internal Server Error" });
+        } else {
+          data.forEach((blog) => {
+            blog.tag_titles = blog.tag_titles.split(",");
+          });
+
+          return res.status(200).json({ data, total_pages });
+        }
       });
-      return res.status(200).json(data);
     }
   });
 };
@@ -271,7 +295,6 @@ const getBlogWithTags = (req, res) => {
 
 const saveBLog = (req, res) => {
   const blog_id = req.params.blog_id;
-  
 };
 
 export default {
