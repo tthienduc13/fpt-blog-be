@@ -1,13 +1,155 @@
 import { db } from "../database/connect.js";
 
 const getAllUsers = (req, res) => {
-  const query = "SELECT * FROM user";
+  const query = `
+    SELECT 
+      u.user_id, 
+      CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+      u.email, 
+      r.role_name AS role, 
+      u.department, 
+      u.major, 
+      u.moderateStatus, 
+      u.isVerified, 
+      u.bio
+    FROM 
+      user u
+    JOIN 
+      role r ON u.role_id = r.role_id
+  `;
   db.query(query, (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).json(err);
     }
-    const profiles = data.map(({ password, ...info }) => info);
+    const profiles = data.map((row) => {
+      const {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus,
+        isVerified,
+        bio,
+      } = row;
+      return {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus: Boolean(moderateStatus),
+        isVerified: Boolean(isVerified),
+        bio,
+      };
+    });
+    return res.status(200).json(profiles);
+  });
+};
+
+const getAllStudents = (req, res) => {
+  const query = `
+  SELECT 
+    u.user_id, 
+    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+    u.email, 
+    r.role_name AS role, 
+    u.department, 
+    u.major, 
+    u.moderateStatus, 
+    u.isVerified, 
+    u.bio
+  FROM 
+    user u
+  JOIN 
+    role r ON u.role_id = r.role_id
+  WHERE 
+    u.role_id = 0
+`;
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    const profiles = data.map((row) => {
+      const {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus,
+        isVerified,
+        bio,
+      } = row;
+      return {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus: Boolean(moderateStatus),
+        isVerified: Boolean(isVerified),
+        bio,
+      };
+    });
+    return res.status(200).json(profiles);
+  });
+};
+
+const getAllMentors = (req, res) => {
+  const query = `
+  SELECT 
+    u.user_id, 
+    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+    u.email, 
+    r.role_name AS role, 
+    u.department, 
+    u.major, 
+    u.moderateStatus, 
+    u.isVerified, 
+    u.bio
+  FROM 
+    user u
+  JOIN 
+    role r ON u.role_id = r.role_id
+  WHERE 
+    u.role_id = 1
+`;
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+    const profiles = data.map((row) => {
+      const {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus,
+        isVerified,
+        bio,
+      } = row;
+      return {
+        user_id,
+        fullname,
+        email,
+        role,
+        department,
+        major,
+        moderateStatus: Boolean(moderateStatus),
+        isVerified: Boolean(isVerified),
+        bio,
+      };
+    });
     return res.status(200).json(profiles);
   });
 };
@@ -128,4 +270,6 @@ export default {
   updateInfo,
   getMentionData,
   updateBio,
+  getAllStudents,
+  getAllMentors,
 };

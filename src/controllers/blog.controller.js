@@ -107,7 +107,16 @@ const createBlog = (req, res) => {
 };
 
 const getPendingBlog = (req, res) => {
-  const status = 0; // Pending status (adjust if needed)
+  const status = 0;
+  const page = parseInt(req.query.page); // Use req.query to access the page parameter
+  const page_size = 6; // Define the desired number of results per page
+  const offset = (page - 1) * page_size;
+
+  const countQuery = `
+    SELECT COUNT(*) AS total_count
+    FROM blog
+    WHERE status = ?;
+  `;
 
   const query = `
     SELECT
@@ -145,31 +154,116 @@ const getPendingBlog = (req, res) => {
     GROUP BY
         b.blog_id
     ORDER BY
-        b.created_at DESC;
+        b.created_at DESC
+    LIMIT
+        ?
+    OFFSET
+        ?;
   `;
 
-  db.query(query, [status], (err, data) => {
-    if (err) {
-      console.error(err);
+  db.query(countQuery, [status], (countErr, countData) => {
+    if (countErr) {
+      console.error(countErr);
       return res.status(500).json({ error: "Internal Server Error" });
     } else {
-      data.forEach((blog) => {
-        blog.tag_titles = blog.tag_titles.split(",");
+      const total_count = countData[0].total_count;
+      const total_pages = Math.ceil(total_count / page_size);
+
+      db.query(query, [status, page_size, offset], (queryErr, data) => {
+        if (queryErr) {
+          console.error(queryErr);
+          return res.status(500).json({ error: "Internal Server Error" });
+        } else {
+          data.forEach((blog) => {
+            blog.tag_titles = blog.tag_titles.split(",");
+          });
+
+          return res.status(200).json({ data, total_pages });
+        }
       });
-      return res.status(200).json(data);
     }
   });
 };
 
 const getPostedBlog = (req, res) => {
-  const query =
-    "SELECT * FROM blog WHERE user_id = ? ORDER BY published_at DESC";
-  db.query(query, [req.params.user_id], (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json(err);
+  const page = parseInt(req.query.page); // Use req.query to access the page parameter
+  const page_size = 6; // Define the desired number of results per page
+  const offset = (page - 1) * page_size;
+
+  const countQuery = `
+    SELECT COUNT(*) AS total_count
+    FROM blog
+    WHERE user_id = ?;
+  `;
+
+  const query = `
+    SELECT
+        b.blog_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+        b.blog_title,
+        c.description AS category_description,
+        b.content,
+        b.status,
+        b.view,
+        b.visual,
+        b.created_at,
+        b.published_at,
+        GROUP_CONCAT(t.title) AS tag_titles
+    FROM
+        blog b
+    LEFT JOIN
+        category c
+    ON
+        b.category_id = c.category_id
+    LEFT JOIN
+        user u
+    ON
+        b.user_id = u.user_id
+    LEFT JOIN
+        blog_tags bt
+    ON
+        b.blog_id = bt.blog_id
+    LEFT JOIN
+        tag t
+    ON
+        bt.tag_id = t.tag_id
+    WHERE
+        b.user_id = ?
+    GROUP BY
+        b.blog_id
+    ORDER BY
+        b.published_at DESC
+    LIMIT
+        ?
+    OFFSET
+        ?;
+  `;
+
+  db.query(countQuery, [req.params.user_id], (countErr, countData) => {
+    if (countErr) {
+      console.error(countErr);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      const total_count = countData[0].total_count;
+      const total_pages = Math.ceil(total_count / page_size);
+
+      db.query(
+        query,
+        [req.params.user_id, page_size, offset],
+        (queryErr, data) => {
+          if (queryErr) {
+            console.error(queryErr);
+            return res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            data.forEach((blog) => {
+              blog.tag_titles = blog.tag_titles.split(",");
+            });
+
+            return res.status(200).json({ data, total_pages });
+          }
+        }
+      );
     }
-    return res.status(200).json(data);
   });
 };
 
@@ -271,7 +365,6 @@ const getBlogWithTags = (req, res) => {
 
 const saveBLog = (req, res) => {
   const blog_id = req.params.blog_id;
-  
 };
 
 export default {
