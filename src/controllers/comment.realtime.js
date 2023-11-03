@@ -36,13 +36,46 @@ const commentController = (io) => {
       );
     });
 
+    socket.on("new-notification", (newNotification) => {
+      const notification_id = uuidv4();
+      const query =
+        "INSERT INTO notification (notification_id, user_id, notification_title, content, image, created_at) VALUES (?, ?, ?, ?,?, NOW());";
+
+      db.query(
+        query,
+        [
+          notification_id,
+          newNotification.user_id,
+          newNotification.notification_title,
+          newNotification.content,
+          newNotification.image,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error adding notification:", err);
+          } else {
+            console.log("Notification added successfully");
+            const addedNotification = {
+              notification_id,
+              user_id: newNotification.user_id,
+              notification_title: newNotification.notification_title,
+              content: newNotification.content,
+              image: newNotification.image,
+              created_at: new Date(),
+            };
+            io.emit("notification-updated", addedNotification);
+          }
+        }
+      );
+    });
+
     socket.on("delete-comment", (deleteComment) => {
       const query =
         "DELETE FROM comment WHERE user_id = ? and comment_id = ? ;";
 
       db.query(
         query,
-        [deleteComment.user_id, deleteComment.comment_id ],
+        [deleteComment.user_id, deleteComment.comment_id],
         (err, result) => {
           if (err) {
             console.error("Error deleting comment:", err);
