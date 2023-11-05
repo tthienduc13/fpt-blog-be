@@ -108,8 +108,8 @@ const createBlog = (req, res) => {
 
 const getPendingBlog = (req, res) => {
   const status = 0;
-  const page = parseInt(req.query.page); // Use req.query to access the page parameter
-  const page_size = 6; // Define the desired number of results per page
+  const page = parseInt(req.query.page); 
+  const page_size = 6; 
   const offset = (page - 1) * page_size;
 
   const countQuery = `

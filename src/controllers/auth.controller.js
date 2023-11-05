@@ -24,11 +24,11 @@ const register = (req, res) => {
     }
 
     const insertQuery =
-      "INSERT INTO user (user_id, email, password, role_id, isVerified, created_at) VALUES (?,?,?,?,?,NOW())";
+      "INSERT INTO user (user_id, email, password, role_id, isVerified, isUpdated, moderateStatus, created_at) VALUES (?,?,?,?,?,?,?,NOW())";
 
     db.query(
       insertQuery,
-      [user_id, req.body.email, hashedPassword, role, false],
+      [user_id, req.body.email, hashedPassword, role, false, false, false],
       (err, data) => {
         if (err) return res.status(500).json(err);
         if (!err) {
@@ -345,12 +345,15 @@ const login = (req, res) => {
         .json("Account not verified. Please verify your email.");
     }
 
+    const isUpdated = data[0].isUpdated === 1; // Convert to boolean
+
     const token = jwt.sign(
       {
         email: data[0].email,
         sub: data[0].user_id,
         UserRole: data[0].role_id,
-        firstName: data[0].first_name,
+        isUpdated: data[0].isUpdated, // Include the converted boolean value
+        moderateStatus: data[0].moderateStatus,
         "remember-me": rememberStatus,
       },
       process.env.SECRET_KEY

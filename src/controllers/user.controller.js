@@ -1,5 +1,29 @@
 import { db } from "../database/connect.js";
 
+const getAllDepartments = (req, res) => {
+  const query = "SELECT * FROM department";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+
+    return res.status(200).json(data);
+  });
+};
+
+const getALlMajors = (req, res) => {
+  const query = "SELECT * FROM major";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json(err);
+    }
+
+    return res.status(200).json(data);
+  });
+};
+
 const getAllUsers = (req, res) => {
   const query = `
     SELECT 
@@ -7,8 +31,8 @@ const getAllUsers = (req, res) => {
       CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
       u.email, 
       r.role_name AS role, 
-      u.department, 
-      u.major, 
+      d.description AS department, 
+      m.description AS major, 
       u.moderateStatus, 
       u.isVerified, 
       u.bio
@@ -16,6 +40,10 @@ const getAllUsers = (req, res) => {
       user u
     JOIN 
       role r ON u.role_id = r.role_id
+    LEFT JOIN
+      department d ON u.department_id = d.department_id
+    LEFT JOIN
+      major m ON u.major_id = m.major_id
   `;
   db.query(query, (err, data) => {
     if (err) {
@@ -57,8 +85,8 @@ const getAllStudents = (req, res) => {
     CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
     u.email, 
     r.role_name AS role, 
-    u.department, 
-    u.major, 
+    d.description AS department, 
+    m.description AS major, 
     u.moderateStatus, 
     u.isVerified, 
     u.bio
@@ -66,6 +94,10 @@ const getAllStudents = (req, res) => {
     user u
   JOIN 
     role r ON u.role_id = r.role_id
+  LEFT JOIN
+    department d ON u.department_id = d.department_id
+  LEFT JOIN
+    major m ON u.major_id = m.major_id
   WHERE 
     u.role_id = 0
 `;
@@ -109,8 +141,8 @@ const getAllMentors = (req, res) => {
     CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
     u.email, 
     r.role_name AS role, 
-    u.department, 
-    u.major, 
+    d.description AS department, 
+    m.description AS major, 
     u.moderateStatus, 
     u.isVerified, 
     u.bio
@@ -118,6 +150,10 @@ const getAllMentors = (req, res) => {
     user u
   JOIN 
     role r ON u.role_id = r.role_id
+  LEFT JOIN
+    department d ON u.department_id = d.department_id
+  LEFT JOIN
+    major m ON u.major_id = m.major_id
   WHERE 
     u.role_id = 1
 `;
@@ -224,21 +260,22 @@ const updateInfo = (req, res) => {
 const getUserProfile = (req, res) => {
   const user_id = req.params.user_id;
   const query = `SELECT
-  u.user_id AS user_id,
-  u.first_name AS first_name,
-  u.last_name AS last_name,
-  COALESCE(u.bio, '') AS bio,
-  COALESCE(u.department, '') AS department,
-  u.major AS major,
-  u.position AS position,
-  r.role_name AS role,
-  COALESCE(u.image, '') AS image,
-  u.created_at AS created_at
-FROM user u
-LEFT JOIN role r ON u.role_id = r.role_id
-WHERE u.user_id = ?;
+    u.user_id AS user_id,
+    u.first_name AS first_name,
+    u.last_name AS last_name,
+    COALESCE(u.bio, '') AS bio,
+    d.description AS department,
+    m.description AS major,
+    u.position AS position,
+    r.role_name AS role,
+    COALESCE(u.image, '') AS image,
+    u.created_at AS created_at
+  FROM user u
+  LEFT JOIN role r ON u.role_id = r.role_id
+  LEFT JOIN department d ON u.department_id = d.department_id
+  LEFT JOIN major m ON u.major_id = m.major_id
+  WHERE u.user_id = ?`;
 
-`;
   db.query(query, [user_id], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0) {
@@ -272,4 +309,6 @@ export default {
   updateBio,
   getAllStudents,
   getAllMentors,
+  getAllDepartments,
+  getALlMajors,
 };
