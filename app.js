@@ -47,6 +47,7 @@ initRoutes(app);
 // server.listen(process.env.APP_PORT, () => {
 //   console.log(`App is listening on ${process.env.APP_PORT}`);
 // });
+const port = process.env.PORT || 3000;
 
 // Listen on `port` and 0.0.0.0
 app.listen(port, "0.0.0.0", function () {
