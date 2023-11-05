@@ -49,6 +49,6 @@ initRoutes(app);
 // });
 
 // Listen on `port` and 0.0.0.0
-app.listen(port, "0.0.0.0", function () {
-  console.log(`App is listening on ${port}`);
+app.listen(PORT, "0.0.0.0", function () {
+  console.log(`App is listening on ${PORT}`);
 });
