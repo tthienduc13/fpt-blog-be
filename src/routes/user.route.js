@@ -15,6 +15,9 @@ router.get("/mentors", userController.getAllMentors);
 router.get("/profile-info/:user_id", userController.getUserProfile);
 router.patch("/profile/update-bio/:user_id", userController.updateBio);
 
+router.get("/departments", userController.getAllDepartments);
+router.get("/majors", userController.getALlMajors);
+
 /**
  * @swagger
  * tags:
