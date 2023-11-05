@@ -108,8 +108,8 @@ const createBlog = (req, res) => {
 
 const getPendingBlog = (req, res) => {
   const status = 0;
-  const page = parseInt(req.query.page); 
-  const page_size = 6; 
+  const page = parseInt(req.query.page);
+  const page_size = 6;
   const offset = (page - 1) * page_size;
 
   const countQuery = `
@@ -367,6 +367,29 @@ const saveBLog = (req, res) => {
   const blog_id = req.params.blog_id;
 };
 
+const searchBlogsByCategoryAndTitle = (req, res) => {
+  const categoryId = req.body.category_id; // Lấy giá trị category_id từ request query
+  const searchString = req.body.search; // Lấy giá trị chuỗi tìm kiếm từ request query
+  console.log(categoryId, searchString);
+  // Xây dựng truy vấn SQL để tìm kiếm blog dựa trên category_id và chuỗi tìm kiếm trong tiêu đề
+  const query = `
+    SELECT * From blog Where category_id = ? and blog_title like ?
+    
+  `;
+
+  // Định dạng chuỗi tìm kiếm để tìm kiếm trong tiêu đề của blog
+  const searchPattern = `%${searchString}%`;
+
+  // Thực hiện truy vấn
+  db.query(query, [categoryId, searchPattern], (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    return res.status(200).json(data);
+  });
+};
+
 export default {
   getAllCategory,
   getPendingBlog,
@@ -380,4 +403,5 @@ export default {
   approveBlog,
   rejectBlog,
   getBlogWithTags,
+  searchBlogsByCategoryAndTitle,
 };

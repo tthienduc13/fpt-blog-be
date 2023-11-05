@@ -18,6 +18,8 @@ router.get("/posted/:user_id", blogController.getPostedBlog);
 router.patch("/approve/:blog_id", blogController.approveBlog);
 router.patch("/reject/:blog_id", blogController.rejectBlog);
 
+router.post("/search", blogController.searchBlogsByCategoryAndTitle);
+
 /**
  * @swagger
  * tags:
