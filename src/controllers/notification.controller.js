@@ -82,4 +82,52 @@ OFFSET
   });
 };
 
-export default { getAllNotification, getNotification };
+const getAllNotificationClient = (req, res) => {
+  const queryNotifications = `
+    SELECT
+      n.notification_id,
+      CONCAT(u.first_name, ' ', u.last_name) AS postedBy,
+      n.notification_title AS title,
+      n.content,
+      n.image,
+      n.created_at
+    FROM
+      notification n
+    JOIN
+      user u
+    ON
+      n.user_id = u.user_id
+    ORDER BY
+      n.created_at DESC;
+  `;
+
+  const queryNotificationCount = `
+    SELECT COUNT(*) AS notificationCount FROM notification;
+  `;
+
+  db.query(queryNotifications, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    const notifications = data;
+
+    db.query(queryNotificationCount, (err, countData) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      const notificationCount = countData[0].notificationCount;
+
+      return res.status(200).json({ notifications, notificationCount });
+    });
+  });
+};
+
+export default {
+  getAllNotification,
+  getNotification,
+  getAllNotificationClient,
+};

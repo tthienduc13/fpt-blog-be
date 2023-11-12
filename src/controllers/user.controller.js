@@ -28,7 +28,7 @@ const getAllUsers = (req, res) => {
   const query = `
     SELECT 
       u.user_id, 
-      CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+      CONCAT(u.first_name, ' ', u.last_name) AS fullName, 
       u.email, 
       r.role_name AS role, 
       d.description AS department, 
@@ -53,7 +53,7 @@ const getAllUsers = (req, res) => {
     const profiles = data.map((row) => {
       const {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -64,7 +64,7 @@ const getAllUsers = (req, res) => {
       } = row;
       return {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -82,7 +82,7 @@ const getAllStudents = (req, res) => {
   const query = `
   SELECT 
     u.user_id, 
-    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+    CONCAT(u.first_name, ' ', u.last_name) AS fullName, 
     u.email, 
     r.role_name AS role, 
     d.description AS department, 
@@ -109,7 +109,7 @@ const getAllStudents = (req, res) => {
     const profiles = data.map((row) => {
       const {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -120,7 +120,7 @@ const getAllStudents = (req, res) => {
       } = row;
       return {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -138,7 +138,7 @@ const getAllMentors = (req, res) => {
   const query = `
   SELECT 
     u.user_id, 
-    CONCAT(u.first_name, ' ', u.last_name) AS fullname, 
+    CONCAT(u.first_name, ' ', u.last_name) AS fullName, 
     u.email, 
     r.role_name AS role, 
     d.description AS department, 
@@ -165,7 +165,7 @@ const getAllMentors = (req, res) => {
     const profiles = data.map((row) => {
       const {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -176,7 +176,7 @@ const getAllMentors = (req, res) => {
       } = row;
       return {
         user_id,
-        fullname,
+        fullName,
         email,
         role,
         department,
@@ -206,15 +206,38 @@ const getMentionData = (req, res) => {
 
 const getUserInfo = (req, res) => {
   const user_id = req.params.user_id;
-  const query = "SELECT * FROM user WHERE user_id = ?";
+  const query = `
+    SELECT 
+      u.*,
+      CONCAT(u.first_name, ' ', u.last_name) AS fullName,
+      d.description AS department,
+      m.description AS major
+    FROM 
+      user u
+    LEFT JOIN
+      department d ON u.department_id = d.department_id
+    LEFT JOIN
+      major m ON u.major_id = m.major_id
+    WHERE 
+      user_id = ?
+  `;
 
   db.query(query, [user_id], (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    const { user_id, remember, password, ...info } = data[0];
-    return res.json(info);
+    const {
+      department_id,
+      major_id,
+      first_name,
+      last_name,
+      password,
+      isVerified,
+      isUpdated,
+      ...info
+    } = data[0];
+    return res.json({ ...info, fullName: `${first_name} ${last_name}` });
   });
 };
 

@@ -1,6 +1,5 @@
 import nodeMailer from "nodemailer";
 import { config as configDotenv } from "dotenv";
-import inLineCss from "nodemailer-juice";
 configDotenv();
 
 const sendEmail = async (email, mailSubject, content) => {
@@ -21,7 +20,6 @@ const sendEmail = async (email, mailSubject, content) => {
       subject: mailSubject,
       html: content,
     };
-
     transport.sendMail(mailOption, (err, info) => {
       if (err) {
         console.log(err);

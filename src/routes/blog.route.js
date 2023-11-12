@@ -1,7 +1,11 @@
 import express from "express";
 import blogController from "../controllers/blog.controller.js";
 const router = express.Router();
+router.get("/featured", blogController.getFeaturedBlogs);
+router.get("/major/:category_id", blogController.getMajorBlog);
 router.get("/pending", blogController.getPendingBlog);
+router.get("/category-blog", blogController.getCategoryPostById);
+
 router.get("/categories", blogController.getAllCategory);
 router.get("/categories/:category_id", blogController.getCategoryById);
 router.get("/tags", blogController.getAllTag);
@@ -12,6 +16,9 @@ router.get("/:blog_id", blogController.getBlogWithTags);
 
 router.post("/create", blogController.createBlog);
 router.post("/create/blog-tags", blogController.createBlogTags);
+
+router.post("/save", blogController.saveBlog);
+router.delete("/un-save/:blog_id/:user_id", blogController.unsaveBlog);
 
 router.get("/posted/:user_id", blogController.getPostedBlog);
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "webdriver-update": "./node_modules/protractor/bin/webdriver-manager update",
@@ -23,6 +23,7 @@
     "mysql": "^2.18.1",
     "mysql-client": "^0.3.0",
     "mysql2": "^3.6.1",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.5",
     "nodemailer-express-handlebars": "^6.1.0",
     "nodemailer-juice": "^1.0.1",
