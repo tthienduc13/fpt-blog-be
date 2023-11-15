@@ -85,23 +85,21 @@ const getAllNotification = (req, res) => {
 
 const getAllNotificationClient = (req, res) => {
   const queryNotifications = `
-    SELECT
-      n.notification_id,
-      CONCAT(u.first_name, ' ', u.last_name) AS postedBy,
-      n.notification_title AS title,
-      n.content,
-      n.image,
-      n.created_at
-    FROM
-      notification n
-    JOIN
-      user u
-    WHERE
-      n.isHide = false
-    ON
-      n.user_id = u.user_id
-    ORDER BY
-      n.created_at DESC;
+  SELECT
+  n.notification_id,
+  CONCAT(u.first_name, ' ', u.last_name) AS postedBy,
+  n.notification_title AS title,
+  n.content,
+  n.image,
+  n.created_at
+FROM
+  notification n
+JOIN
+  user u ON n.user_id = u.user_id
+WHERE
+  n.isHide = false
+ORDER BY
+  n.created_at DESC;
   `;
 
   const queryNotificationCount = `
