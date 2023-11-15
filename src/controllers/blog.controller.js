@@ -115,7 +115,7 @@ const getPendingBlog = (req, res) => {
   const countQuery = `
     SELECT COUNT(*) AS total_count
     FROM blog
-    WHERE status = ?;
+    WHERE status = ? and isHide = false;
   `;
 
   const query = `
@@ -150,7 +150,7 @@ const getPendingBlog = (req, res) => {
     ON
         bt.tag_id = t.tag_id
     WHERE
-        b.status = ?
+        b.status = ? and b.isHide = false
     GROUP BY
         b.blog_id
     ORDER BY
@@ -193,7 +193,7 @@ const getPostedBlog = (req, res) => {
   const countQuery = `
     SELECT COUNT(*) AS total_count
     FROM blog
-    WHERE user_id = ?;
+    WHERE user_id = ? and isHide = false;
   `;
 
   const query = `
