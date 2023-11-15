@@ -5,4 +5,7 @@ const router = express.Router();
 router.get("/all", notificationController.getAllNotification);
 router.get("/all-client", notificationController.getAllNotificationClient);
 router.get("/detail/:notification_id", notificationController.getNotification);
+
+router.patch("/hide/:notification_id", notificationController.hideNotification);
+
 export default router;

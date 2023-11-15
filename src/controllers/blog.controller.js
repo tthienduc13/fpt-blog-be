@@ -287,7 +287,7 @@ const getCategoryPostById = (req, res) => {
         b.content,
         b.status,
         b.view,
-        b.visual,
+        b.visual as blogImage,
         b.created_at,
         b.published_at,
         GROUP_CONCAT(t.title) AS tag_titles
@@ -310,7 +310,7 @@ const getCategoryPostById = (req, res) => {
     ON
         bt.tag_id = t.tag_id
     WHERE
-        b.category_id = ? and status = 1 m
+        b.category_id = ? and status = 1 
     GROUP BY
         b.blog_id
     ORDER BY

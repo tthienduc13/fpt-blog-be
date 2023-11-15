@@ -39,28 +39,29 @@ const getAllNotification = (req, res) => {
 
   const countQuery = `
     SELECT COUNT(*) AS total_count
-    FROM notification
+    FROM notification WHERE
+    isHide = false
   `;
 
   const query = `SELECT
   n.notification_id,
-    CONCAT(u.first_name, ' ', u.last_name) AS user_name,
-  n.notification_title as title,
+  CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+  n.notification_title AS title,
   n.content,
   n.image,
   n.created_at
-FROM
-  notification n
-JOIN
-  user u
-ON
-  n.user_id = u.user_id
-ORDER BY
-  n.created_at DESC
-LIMIT
-  ?
-OFFSET
-  ?;
+  FROM
+   notification n
+  JOIN
+    user u ON n.user_id = u.user_id
+  WHERE
+    n.isHide = false
+  ORDER BY
+    n.created_at DESC
+  LIMIT
+    ?
+  OFFSET
+    ?;
 `;
   db.query(countQuery, (countErr, countData) => {
     if (countErr) {
@@ -95,6 +96,8 @@ const getAllNotificationClient = (req, res) => {
       notification n
     JOIN
       user u
+    WHERE
+      n.isHide = false
     ON
       n.user_id = u.user_id
     ORDER BY
@@ -102,7 +105,7 @@ const getAllNotificationClient = (req, res) => {
   `;
 
   const queryNotificationCount = `
-    SELECT COUNT(*) AS notificationCount FROM notification;
+    SELECT COUNT(*) AS notificationCount FROM notification WHERE isHide = false;
   `;
 
   db.query(queryNotifications, (err, data) => {
@@ -126,8 +129,20 @@ const getAllNotificationClient = (req, res) => {
   });
 };
 
+const hideNotification = (req, res) => {
+  const query = `UPDATE notification
+  SET isHide = true
+  WHERE notification_id = ?;`;
+  db.query(query, [req.params.notification_id], (err, data) => {
+    console.log(req.params.notification_id);
+    if (err) return res.status(500).json(err);
+    res.status(200).json({ message: "Notification deleted" });
+  });
+};
+
 export default {
   getAllNotification,
   getNotification,
   getAllNotificationClient,
+  hideNotification,
 };
