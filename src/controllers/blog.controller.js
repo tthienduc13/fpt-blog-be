@@ -115,7 +115,7 @@ const getPendingBlog = (req, res) => {
   const countQuery = `
     SELECT COUNT(*) AS total_count
     FROM blog
-    WHERE status = ? and isHide = false;
+    WHERE status = ? ;
   `;
 
   const query = `
@@ -150,7 +150,7 @@ const getPendingBlog = (req, res) => {
     ON
         bt.tag_id = t.tag_id
     WHERE
-        b.status = ? and b.isHide = false
+        b.status = ? 
     GROUP BY
         b.blog_id
     ORDER BY
@@ -175,7 +175,11 @@ const getPendingBlog = (req, res) => {
           return res.status(500).json({ error: "Internal Server Error" });
         } else {
           data.forEach((blog) => {
-            blog.tag_titles = blog.tag_titles.split(",");
+            if (blog.tag_titles !== null) {
+              blog.tag_titles = blog.tag_titles.split(",");
+            } else {
+              blog.tag_titles = [];
+            }
           });
 
           return res.status(200).json({ data, total_pages });
