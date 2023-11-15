@@ -228,7 +228,7 @@ const getPostedBlog = (req, res) => {
     ON
         bt.tag_id = t.tag_id
     WHERE
-        b.user_id = ?
+        b.user_id = ? AND b.isHide = false
     GROUP BY
         b.blog_id
     ORDER BY
@@ -237,6 +237,82 @@ const getPostedBlog = (req, res) => {
         ?
     OFFSET
         ?;
+  `;
+
+  db.query(countQuery, [req.params.user_id], (countErr, countData) => {
+    if (countErr) {
+      console.error(countErr);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      const total_count = countData[0].total_count;
+      const total_pages = Math.ceil(total_count / page_size);
+
+      db.query(
+        query,
+        [req.params.user_id, page_size, offset],
+        (queryErr, data) => {
+          if (queryErr) {
+            console.error(queryErr);
+            return res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            data.forEach((blog) => {
+              blog.tag_titles = blog.tag_titles.split(",");
+            });
+
+            return res.status(200).json({ data, total_pages });
+          }
+        }
+      );
+    }
+  });
+};
+
+const getSavedBlog = (req, res) => {
+  const page = parseInt(req.query.page); // Use req.query to access the page parameter
+  const page_size = 6; // Define the desired number of results per page
+  const offset = (page - 1) * page_size;
+
+  const countQuery = `
+    SELECT COUNT(*) AS total_count
+    FROM blog_save
+    WHERE user_id = ?;
+  `;
+
+  const query = `
+  SELECT
+    b.blog_id,
+    CONCAT(u.first_name, ' ', u.last_name) AS user_name,
+    b.blog_title,
+    c.description AS category_description,
+    b.content,
+    b.status,
+    b.view,
+    b.visual,
+    b.created_at,
+    b.published_at,
+    GROUP_CONCAT(t.title) AS tag_titles
+FROM
+    blog_save bs
+INNER JOIN
+    blog b ON bs.blog_id = b.blog_id
+LEFT JOIN
+    category c ON b.category_id = c.category_id
+LEFT JOIN
+    user u ON b.user_id = u.user_id
+LEFT JOIN
+    blog_tags bt ON b.blog_id = bt.blog_id
+LEFT JOIN
+    tag t ON bt.tag_id = t.tag_id
+WHERE
+    bs.user_id = ? AND b.isHide = false
+GROUP BY
+    b.blog_id, bs.created_at
+ORDER BY
+    bs.created_at DESC
+LIMIT
+    ?
+OFFSET
+    ?;
   `;
 
   db.query(countQuery, [req.params.user_id], (countErr, countData) => {
@@ -310,7 +386,7 @@ const getCategoryPostById = (req, res) => {
     ON
         bt.tag_id = t.tag_id
     WHERE
-        b.category_id = ? and status = 1 
+        b.category_id = ? and b.status = 1 and b.isHide = false
     GROUP BY
         b.blog_id
     ORDER BY
@@ -391,6 +467,16 @@ const rejectBlog = (req, res) => {
   });
 };
 
+const deleteBlog = (req, res) => {
+  const query = "UPDATE blog SET isHide = true WHERE blog_id = ?";
+  db.query(query, [req.params.blog_id], (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+    return res.status(200).json("Blog deleted");
+  });
+};
+
 const getBlogWithTags = (req, res) => {
   const blogId = req.params.blog_id;
 
@@ -399,6 +485,7 @@ const getBlogWithTags = (req, res) => {
         b.blog_id,
         CONCAT(u.first_name, ' ', u.last_name) AS user_name,
         b.blog_title,
+        b.user_id,
         c.description AS category_description,
         b.content,
         b.status,
@@ -549,7 +636,7 @@ JOIN
 JOIN
  category c ON b.category_id = c.category_id
  WHERE
- b.status = 1
+ b.status = 1 and b.isHide = false
 GROUP BY
  b.blog_id, b.blog_title, b.visual, postedBy, b.content,  c.description, b.created_at
 ORDER BY
@@ -587,7 +674,7 @@ JOIN
 JOIN
   category c ON b.category_id = c.category_id
 WHERE
-  b.category_id = ? AND b.status = 1
+  b.category_id = ? AND b.status = 1 AND b.isHide = false
 GROUP BY
   b.blog_id
 ORDER BY
@@ -622,4 +709,6 @@ export default {
   saveBlog,
   unsaveBlog,
   getCategoryPostById,
+  deleteBlog,
+  getSavedBlog,
 };

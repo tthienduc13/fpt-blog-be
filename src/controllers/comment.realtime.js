@@ -165,6 +165,36 @@ const commentController = (io) => {
         }
       );
     });
+
+    socket.on("like-comment-reply", (newCommentLike) => {
+      const like_id = uuidv4();
+      const query =
+        "INSERT INTO comment_reply_like (like_id, user_id, commentReply_id, created_at) VALUES (?,?,?,NOW())";
+      db.query(
+        query,
+        [like_id, newCommentLike.user_id, newCommentLike.comment_id],
+        (err, result) => {
+          if (err) {
+            console.log("Error like comment:", err);
+          }
+          io.emit("comment-reply-liked");
+        }
+      );
+    });
+
+    socket.on("unlike-comment-reply", (unLikeComment) => {
+      const query = `DELETE FROM comment_reply_like WHERE user_id = ? AND commentReply_id = ?;`;
+      db.query(
+        query,
+        [unLikeComment.user_id, unLikeComment.comment_id],
+        (err, result) => {
+          if (err) {
+            console.log("Error unlike comment", err);
+          }
+          io.emit("comment-reply-unliked");
+        }
+      );
+    });
   });
 };
 

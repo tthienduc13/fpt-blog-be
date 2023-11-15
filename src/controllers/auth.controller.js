@@ -271,10 +271,10 @@ const register = (req, res) => {
                         of your email. Simply click the button below to verify your email.
                       </div>
                       <div class="verify-button">
-                        <a style="color:white;" class="button" href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}"> Verify email </a>
+                        <a style="color:white;" class="button" href="https://fpt-blog-be-production.up.railway.app/api/auth/verify?email=${req.body.email}&token=${token}"> Verify email </a>
                       </div>
                       <div class="content2">
-                        If that doesn't work, please click <a href="http://localhost:5000/api/auth/verify?email=${req.body.email}&token=${token}">here</a>
+                        If that doesn't work, please click <a href="https://fpt-blog-be-production.up.railway.app/api/auth/verify?email=${req.body.email}&token=${token}">here</a>
                       </div>
                       <div class="content3">
                         Cheers, <br />

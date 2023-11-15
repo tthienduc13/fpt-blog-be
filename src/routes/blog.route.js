@@ -5,6 +5,7 @@ router.get("/featured", blogController.getFeaturedBlogs);
 router.get("/major/:category_id", blogController.getMajorBlog);
 router.get("/pending", blogController.getPendingBlog);
 router.get("/category-blog/:category_id", blogController.getCategoryPostById);
+router.get("/saved/:user_id", blogController.getSavedBlog);
 
 router.get("/categories", blogController.getAllCategory);
 router.get("/categories/:category_id", blogController.getCategoryById);
@@ -24,9 +25,8 @@ router.get("/posted/:user_id", blogController.getPostedBlog);
 
 router.patch("/approve/:blog_id", blogController.approveBlog);
 router.patch("/reject/:blog_id", blogController.rejectBlog);
+router.patch("/hide/:blog_id", blogController.deleteBlog);
 
 router.post("/search", blogController.searchBlogsByCategoryAndTitle);
-
-
 
 export default router;

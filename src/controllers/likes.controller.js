@@ -93,6 +93,54 @@ const checkUserLikedComment = (req, res) => {
   });
 };
 
+const checkUserSavedPost = (req, res) => {
+  const userId = req.params.user_id;
+  const blogId = req.params.blog_id;
+
+  const query =
+    "SELECT COUNT(*) AS saveCount FROM blog_save WHERE user_id = ? AND blog_id = ?";
+  db.query(query, [userId, blogId], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hasSaved = result[0].saveCount > 0;
+      res.status(200).json(hasSaved);
+    }
+  });
+};
+
+const checkUserLikedCommentReply = (req, res) => {
+  const userId = req.params.user_id;
+  const comment = req.params.commentReply_id;
+
+  const query =
+    "SELECT COUNT(*) AS likeCount FROM comment_reply_like WHERE user_id = ? AND commentReply_id = ?";
+  db.query(query, [userId, comment], (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json(err);
+    } else {
+      const hasLiked = result[0].likeCount > 0;
+      res.status(200).json(hasLiked);
+    }
+  });
+};
+
+const getLikeCountForCommentReply = (req, res) => {
+  const comment_id = req.params.commentReply_id;
+  const query = `SELECT COUNT(*) AS like_count FROM comment_reply_like WHERE commentReply_id = ?;`;
+
+  db.query(query, [comment_id], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    const likeCount = parseInt(result[0].like_count, 10);
+    return res.status(200).json(likeCount);
+  });
+};
+
 export default {
   likePost,
   unlikePost,
@@ -100,4 +148,7 @@ export default {
   getLikeCountForComment,
   checkUserLikedBlog,
   checkUserLikedComment,
+  checkUserSavedPost,
+  getLikeCountForCommentReply,
+  checkUserLikedCommentReply,
 };
