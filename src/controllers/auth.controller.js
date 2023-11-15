@@ -595,10 +595,10 @@ const forgotPassword = (req, res) => {
                     It looks like you forgot your password. Please click the button below to change your password. If you did not request it, please ignore the email.
                   </div>
                   <div class="verify-button">
-                    <a style="color:white;" class="button" href="http://localhost:3000/auth/reset-password/${data[0].user_id}/${token}"> Change Password </a>
+                    <a style="color:white;" class="button" href="https://fptu-blog.vercel.app/auth/reset-password/${data[0].user_id}/${token}"> Change Password </a>
                   </div>
                   <div class="content2">
-                    If that doesn't work, please click <a href="http://localhost:3000/auth/reset-password/${data[0].user_id}/${token}">here</a>
+                    If that doesn't work, please click <a href="https://fptu-blog.vercel.app/auth/reset-password/${data[0].user_id}/${token}">here</a>
                   </div>
                   <div class="content3">
                     Cheers, <br />
