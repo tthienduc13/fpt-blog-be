@@ -16,13 +16,12 @@ const io = new Server(server, {
     origin: [
       "http://localhost:3000",
       "http://localhost:3001",
-      "https://fpt-blog-admin.vercel.app/",
-      "https://fptu-blog.vercel.app/",
+      "https://fpt-blog-admin.vercel.app",
+      "https://fptu-blog.vercel.app",
     ],
     methods: ["GET", "POST"],
   },
 });
-
 // Middleware
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
