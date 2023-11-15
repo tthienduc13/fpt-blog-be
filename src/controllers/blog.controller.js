@@ -351,7 +351,7 @@ const getCategoryPostById = (req, res) => {
   const countQuery = `
     SELECT COUNT(*) AS total_count
     FROM blog
-    WHERE category_id = ? and isHide = false;
+    WHERE category_id = ? and isHide = false and status = 1;
   `;
 
   const query = `
