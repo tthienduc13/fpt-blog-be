@@ -26,24 +26,27 @@ const getALlMajors = (req, res) => {
 
 const getAllUsers = (req, res) => {
   const query = `
-    SELECT 
-      u.user_id, 
-      CONCAT(u.first_name, ' ', u.last_name) AS fullName, 
-      u.email, 
-      r.role_name AS role, 
-      d.description AS department, 
-      m.description AS major, 
-      u.moderateStatus, 
-      u.isVerified, 
-      u.bio
-    FROM 
-      user u
-    JOIN 
-      role r ON u.role_id = r.role_id
-    LEFT JOIN
-      department d ON u.department_id = d.department_id
-    LEFT JOIN
-      major m ON u.major_id = m.major_id
+    
+SELECT 
+u.user_id, 
+CONCAT(u.first_name, ' ', u.last_name) AS fullName, 
+u.email, 
+r.role_name AS role, 
+d.description AS department, 
+m.description AS major, 
+u.moderateStatus, 
+u.isVerified, 
+u.bio
+FROM 
+user u
+JOIN 
+role r ON u.role_id = r.role_id
+LEFT JOIN
+department d ON u.department_id = d.department_id
+LEFT JOIN
+major m ON u.major_id = m.major_id
+WHERE
+u.role_id <> 2
   `;
   db.query(query, (err, data) => {
     if (err) {
